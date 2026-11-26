@@ -38,6 +38,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "window/window_session_controller.h"
 #include "styles/style_info.h"
 #include "styles/style_profile.h"
+#include "ayu/ui/custom_style/custom_style.h"
 
 namespace Info {
 namespace {
@@ -159,6 +160,12 @@ bool ContentWidget::isStackBottom() const {
 
 void ContentWidget::paintEvent(QPaintEvent *e) {
 	auto p = QPainter(this);
+	const auto &styleEngine = CustomUI::StyleEngine::Instance();
+	if (styleEngine.current().customEnabled) {
+		p.fillRect(e->rect(), _bg);
+		styleEngine.paintCard(p, rect().adjusted(6, 4, -6, -4), _bg->c);
+		return;
+	}
 	if (_paintPadding.isNull()) {
 		p.fillRect(e->rect(), _bg);
 	} else {
