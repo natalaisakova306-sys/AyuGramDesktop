@@ -11,6 +11,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "lottie/lottie_icon.h"
 #include "ui/effects/ripple_animation.h"
 #include "ui/text/text_utilities.h"
+#include "ayu/ui/custom_style/custom_style.h"
 #include "ui/painter.h"
 #include "ui/ui_utility.h"
 #include "styles/style_chat_helpers.h"
@@ -155,8 +156,17 @@ void SendButton::finishAnimating() {
 
 void SendButton::paintEvent(QPaintEvent *e) {
 	auto p = QPainter(this);
-
 	auto over = (isDown() || isOver());
+	
+const auto &styleEngine = CustomUI::StyleEngine::Instance();
+	if (styleEngine.current().customEnabled) {
+		auto fill = styleEngine.currentShimmerColor(0.0f);
+		if (over) {
+			fill = fill.lighter(115);
+		}
+		styleEngine.paintCard(p, rect().adjusted(4, 4, -4, -4), fill);
+	}
+	
 
 	if (_voiceRoundAnimating) {
 		paintVoiceRoundIcon(p, over);

@@ -15,6 +15,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "data/data_folder.h"
 #include "data/data_forum_topic.h"
 #include "data/data_peer_values.h"
+#include "ayu/ui/custom_style/custom_style.h"
 #include "data/data_saved_sublist.h"
 #include "data/data_session.h"
 #include "data/data_thread.h"
@@ -493,12 +494,17 @@ void PaintRow(
 	if (swipeTranslation) {
 		p.translate(swipeMirrored ? swipeTranslation : -swipeTranslation, 0);
 	}
-	p.fillRect(geometry, bg);
-	if (!(flags & Flag::TopicJumpRipple)) {
-		auto ripple = context.active
-			? st::dialogsRippleBgActive
-			: st::dialogsRippleBg;
-		row->paintRipple(p, 0, 0, context.width, &ripple->c);
+	const auto &styleEngine = CustomUI::StyleEngine::Instance();
+	if (styleEngine.current().customEnabled) {
+		p.fillRect(geometry, context.currentBg);
+		auto cardColor = context.active
+			? styleEngine.currentShimmerColor(0.0f)
+			: context.selected
+			? bg->c.lighter(115)
+			: bg->c;
+		styleEngine.paintCard(p, geometry.adjusted(6, 3, -6, -3), cardColor);
+	} else {
+		p.fillRect(geometry, bg);
 	}
 
 	if (flags & Flag::SavedMessages) {
