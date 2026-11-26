@@ -53,6 +53,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "settings/settings_faq_suggestions.h"
 #include "settings/sections/settings_credits.h"
 #include "settings/sections/settings_folders.h"
+#include "ayu/ui/custom_style/language_picker.h"
 #include "settings/sections/settings_information.h"
 #include "settings/sections/settings_notifications.h"
 #include "settings/settings_power_saving.h"
@@ -488,21 +489,21 @@ void BuildSectionButtons(SectionBuilder &builder) {
 		.keywords = { u"battery"_q, u"animations"_q, u"power"_q, u"saving"_q },
 	});
 
-	builder.addButton({
-		.id = u"main/language"_q,
-		.title = tr::lng_settings_language(),
-		.icon = { &st::menuIconTranslate },
-		.label = rpl::single(
-			Lang::GetInstance().id()
-		) | rpl::then(
-			Lang::GetInstance().idChanges()
-		) | rpl::map([] { return Lang::GetInstance().nativeName(); }),
-		.onClick = [=] {
-			static auto Guard = base::binary_guard();
-			Guard = LanguageBox::Show(controller);
-		},
-		.keywords = { u"translate"_q, u"localization"_q, u"language"_q },
-	});
+	// builder.addButton({
+	// 	.id = u"main/language"_q,
+	// 	.title = tr::lng_settings_language(),
+	// 	.icon = { &st::menuIconTranslate },
+	// 	.label = rpl::single(
+	// 		Lang::GetInstance().id()
+	// 	) | rpl::then(
+	// 		Lang::GetInstance().idChanges()
+	// 	) | rpl::map([] { return Lang::GetInstance().nativeName(); }),
+	// 	.onClick = [=] {
+	// 		static auto Guard = base::binary_guard();
+	// 		Guard = LanguageBox::Show(controller);
+	// 	},
+	// 	.keywords = { u"translate"_q, u"localization"_q, u"language"_q },
+	// });
 }
 
 void BuildInterfaceScale(SectionBuilder &builder) {
@@ -780,6 +781,12 @@ void Main::setupContent() {
 	session->api().premium().reload();
 	session->data().cloudThemes().refresh();
 	session->faqSuggestions().request();
+const auto langPill = Ui::CreateChild<CustomUI::LanguagePillWidget>(this);
+	langPill->raise();
+	sizeValue(
+	) | rpl::start_with_next([=](QSize size) {
+		langPill->moveToRight(16, 12, size.width());
+	}, langPill->lifetime());
 }
 
 void Main::showFinished() {

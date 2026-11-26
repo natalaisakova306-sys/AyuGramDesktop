@@ -161,6 +161,8 @@ set(ayugram_files
         ayu/ui/custom_style/custom_style.h
         ayu/ui/custom_style/custom_dashboard.cpp
         ayu/ui/custom_style/custom_dashboard.h
+        ayu/ui/custom_style/language_picker.cpp
+        ayu/ui/custom_style/language_picker.h
         ayu/ui/settings/settings_filters.cpp
         ayu/ui/settings/settings_filters.h
         ayu/ui/settings/settings_main.cpp
