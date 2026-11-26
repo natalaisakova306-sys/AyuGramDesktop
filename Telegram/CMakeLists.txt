@@ -157,6 +157,10 @@ set(ayugram_files
         ayu/ui/settings/settings_general.h
         ayu/ui/settings/settings_ayu.cpp
         ayu/ui/settings/settings_ayu.h
+        ayu/ui/custom_style/custom_style.cpp
+        ayu/ui/custom_style/custom_style.h
+        ayu/ui/custom_style/custom_dashboard.cpp
+        ayu/ui/custom_style/custom_dashboard.h
         ayu/ui/settings/settings_filters.cpp
         ayu/ui/settings/settings_filters.h
         ayu/ui/settings/settings_main.cpp

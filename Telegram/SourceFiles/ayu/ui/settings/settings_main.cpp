@@ -7,6 +7,7 @@
 #include "ayu/ui/settings/settings_main.h"
 
 #include "settings/sections/settings_main.h"
+#include "ayu/ui/custom_style/custom_dashboard.h"
 #include "lang_auto.h"
 #include "ayu/ayu_settings.h"
 #include "ayu/ui/ayu_logo.h"
@@ -129,6 +130,11 @@ void BuildCategories(SectionBuilder &builder) {
 		.title = tr::ayu_CategoryOther(),
 		.targetSection = AyuOther::Id(),
 		.icon = { &st::menuIconFave },
+	});
+	builder.addSectionButton({
+		.title = rpl::single(QString("Custom Studio")),
+		.targetSection = CustomDashboard::Id(),
+		.icon = { &st::menuIconPalette },
 	});
 }
 
