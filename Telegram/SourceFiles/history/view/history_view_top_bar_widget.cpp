@@ -69,6 +69,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "styles/style_dialogs.h"
 #include "styles/style_chat.h"
 #include "styles/style_info.h"
+#include "ayu/ui/custom_style/custom_style.h"
 
 #include <QtGui/QWindow>
 
@@ -559,7 +560,16 @@ void TopBarWidget::paintEvent(QPaintEvent *e) {
 		: -st::topBarHeight;
 	const auto slidingTop = std::max(selectedButtonsTop, searchFieldTop);
 
-	p.fillRect(QRect(0, 0, width(), st::topBarHeight), st::topBarBg);
+	const auto &styleEngine = CustomUI::StyleEngine::Instance();
+	if (styleEngine.current().customEnabled) {
+		p.fillRect(QRect(0, 0, width(), st::topBarHeight), st::topBarBg);
+		styleEngine.paintCard(
+			p,
+			QRect(0, 0, width(), st::topBarHeight).adjusted(6, 4, -6, -4),
+			st::topBarBg->c);
+	} else {
+		p.fillRect(QRect(0, 0, width(), st::topBarHeight), st::topBarBg);
+	}
 	if (slidingTop < 0) {
 		p.translate(0, slidingTop + st::topBarHeight);
 		paintTopBar(p);

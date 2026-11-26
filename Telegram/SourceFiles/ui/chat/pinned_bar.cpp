@@ -14,6 +14,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "ui/wrap/fade_wrap.h"
 #include "styles/style_chat_helpers.h"
 #include "styles/palette.h"
+#include "ayu/ui/custom_style/custom_style.h"
 
 #include <QtGui/QtEvents>
 
@@ -37,9 +38,19 @@ PinnedBar::PinnedBar(
 		return (shown == _shadow->isHidden());
 	}));
 
-	_wrap.entity()->paintRequest(
+ _wrap.entity()->paintRequest(
 	) | rpl::on_next([=](QRect clip) {
-		QPainter(_wrap.entity()).fillRect(clip, st::historyPinnedBg);
+		auto p = QPainter(_wrap.entity());
+		const auto &styleEngine = CustomUI::StyleEngine::Instance();
+		if (styleEngine.current().customEnabled) {
+			p.fillRect(clip, st::historyPinnedBg);
+			styleEngine.paintCard(
+				p,
+				_wrap.entity()->rect().adjusted(6, 2, -6, -2),
+				st::historyPinnedBg->c);
+		} else {
+			p.fillRect(clip, st::historyPinnedBg);
+		}
 	}, lifetime());
 	_wrap.setAttribute(Qt::WA_OpaquePaintEvent);
 
@@ -50,6 +61,7 @@ PinnedBar::PinnedBar(
 			_wrap.entity()->update();
 		}, lifetime());
 	}
+
 }
 
 PinnedBar::~PinnedBar() {

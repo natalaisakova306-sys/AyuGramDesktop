@@ -28,6 +28,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "data/data_user.h"
 #include "styles/style_dialogs.h"
 #include "styles/style_info.h"
+#include "ayu/ui/custom_style/custom_style.h"
 
 // AyuGram includes
 #include "ayu/ayu_settings.h"
@@ -476,7 +477,12 @@ void TopBar::updateStoriesGeometry(int newWidth) {
 
 void TopBar::paintEvent(QPaintEvent *e) {
 	auto p = QPainter(this);
-
+const auto &styleEngine = CustomUI::StyleEngine::Instance();
+	if (styleEngine.current().customEnabled) {
+		p.fillRect(e->rect(), _st.bg);
+		styleEngine.paintCard(p, rect().adjusted(6, 4, -6, -4), _st.bg->c);
+		return;
+	}
 	auto highlight = _a_highlight.value(_highlight ? 1. : 0.);
 	if (_highlight && !_a_highlight.animating()) {
 		_highlight = false;
