@@ -1,0 +1,59 @@
+name: Build Windows x64
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-2022
+    timeout-minutes: 360
+
+    steps:
+      - name: Check disk space and clean unused tools
+        shell: pwsh
+        run: |
+          Remove-Item -Recurse -Force "C:\Android", "C:\Program Files\dotnet", "C:\msys64" -ErrorAction SilentlyContinue
+          Get-PSDrive C, D
+
+      - name: Checkout AyuGramDesktop
+        uses: actions/checkout@v4
+        with:
+          path: tdesktop
+          submodules: recursive
+
+      - name: Setup MSVC x64 environment
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
+
+      - name: Cache prebuilt libraries
+        id: cache-libs
+        uses: actions/cache@v4
+        with:
+          path: |
+            Libraries
+            ThirdParty
+          key: win-x64-libs-${{ hashFiles('tdesktop/Telegram/build/prepare/**') }}
+
+      - name: Prepare dependencies
+        if: steps.cache-libs.outputs.cache-hit != 'true'
+        shell: cmd
+        working-directory: tdesktop/Telegram
+        run: call build\prepare\win.bat
+
+      - name: Configure CMake
+        shell: cmd
+        working-directory: tdesktop/Telegram
+        run: call configure.bat x64 -D TDESKTOP_API_ID=${{ secrets.API_ID }} -D TDESKTOP_API_HASH=${{ secrets.API_HASH }}
+
+      - name: Build Release
+        shell: cmd
+        run: cmake --build tdesktop/out --config Release --parallel
+
+      - name: Upload portable build
+        uses: actions/upload-artifact@v4
+        with:
+          name: AyuGram-Windows-x64
+          path: |
+            tdesktop/out/Release/*.exe
+            tdesktop/out/Release/modules/**
